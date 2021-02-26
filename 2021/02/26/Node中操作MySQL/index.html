@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bing.jpg">
+  <link rel="icon" type="image/png" href="/img/bing.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="我的博客">
+  <meta name="author" content="春闺梦里人">
+  <meta name="keywords" content="javasript">
+  <title>Node.js中操作MySQL - 春闺梦里人</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chungui-mengliren.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>春闺梦里人</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.webp') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Node.js中操作MySQL">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-26 21:35" pubdate>
+        2021年2月26日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      738 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Node.js中操作MySQL</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Node中操作MySQL"><a href="#Node中操作MySQL" class="headerlink" title="Node中操作MySQL"></a>Node中操作MySQL</h1><h2 id="快速使用"><a href="#快速使用" class="headerlink" title="快速使用"></a>快速使用</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* 1.导入mysql模块 */</span><br><span class="hljs-keyword">const</span> mysql = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;mysql&quot;</span>);<br><br><span class="hljs-comment">/* 2.创建连接池 */</span><br><span class="hljs-keyword">const</span> db = mysql.createPool(&#123;<br>    host: <span class="hljs-string">&quot;localhost&quot;</span>,<span class="hljs-comment">//连接的数据库域名</span><br>    user: <span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-comment">//用户名</span><br>    password: <span class="hljs-string">&quot;admin123&quot;</span>,<span class="hljs-comment">//密码</span><br>    database: <span class="hljs-string">&quot;my_db&quot;</span><span class="hljs-comment">//数据库名称</span><br>&#125;);<br><br><span class="hljs-comment">/* 3.连接数据库,执行sql select查询数据 */</span><br>db.query(<span class="hljs-string">&quot;select * from users&quot;</span>, <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-comment">//发生错误</span><br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);;<br>    &#125;<br>    <span class="hljs-comment">//返回一个数组结果</span><br>    <span class="hljs-built_in">console</span>.log(results);<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h2 id="其它操作"><a href="#其它操作" class="headerlink" title="其它操作"></a>其它操作</h2><h3 id="insert插入数据"><a href="#insert插入数据" class="headerlink" title="insert插入数据"></a><code>insert</code>插入数据</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* 3.执行 insert 插入数据 */</span><br><span class="hljs-comment">//待插入的数据</span><br><span class="hljs-keyword">const</span> user = &#123; <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;wangxiaoming&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;password&quot;</span> &#125;;<br><span class="hljs-comment">// sql语句, ? 表示占位符</span><br><span class="hljs-keyword">const</span> sql = <span class="hljs-string">&quot;insert into users (username,password) values (?,?)&quot;</span>;<br><span class="hljs-comment">//执行sql</span><br>db.query(sql, [user.username, user.password], <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);<br>    &#125;<br>    <span class="hljs-comment">//影响的行数为 1</span><br>    <span class="hljs-keyword">if</span> (results.affectedRows === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;新增一条数据成功&quot;</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h3 id="insert插入数据快捷语法"><a href="#insert插入数据快捷语法" class="headerlink" title="insert插入数据快捷语法"></a><code>insert</code>插入数据快捷语法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* 3.执行 insert 插入数据 */</span><br><span class="hljs-comment">//待插入的数据</span><br><span class="hljs-keyword">const</span> user = &#123; <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;xiaozhang&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;paw&quot;</span> &#125;;<br><span class="hljs-comment">//sql语句 set后面使用 ? 快捷语法</span><br><span class="hljs-keyword">const</span> sql = <span class="hljs-string">&quot;insert into users set ?&quot;</span>;<br><span class="hljs-comment">//user替换set后的 ? 形成快捷语法</span><br>db.query(sql, user, <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);<br>    &#125;<br>    <span class="hljs-comment">//影响的行数为 1</span><br>    <span class="hljs-keyword">if</span> (results.affectedRows === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;新增一条数据成功&quot;</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h3 id="update更新数据"><a href="#update更新数据" class="headerlink" title="update更新数据"></a><code>update</code>更新数据</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* 3.执行 update 更新数据 */</span><br><span class="hljs-comment">//待插入的数据</span><br><span class="hljs-keyword">const</span> user = &#123; <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;xiaozhang&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;paw123&quot;</span> &#125;;<br><span class="hljs-comment">//sql语句 ? 为占位符</span><br><span class="hljs-keyword">const</span> sql = <span class="hljs-string">&quot;update users set password=? where username=?&quot;</span>;<br><span class="hljs-comment">//执行sql</span><br>db.query(sql, [user.password, user.username], <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);<br>    &#125;<br>    <span class="hljs-comment">//影响的行数为 1</span><br>    <span class="hljs-keyword">if</span> (results.affectedRows === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;修改一条数据成功&quot;</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h3 id="update更新数据快捷方式"><a href="#update更新数据快捷方式" class="headerlink" title="update更新数据快捷方式"></a><code>update</code>更新数据快捷方式</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* 3.执行 update 更新数据 */</span><br><span class="hljs-comment">//待插入的数据</span><br><span class="hljs-keyword">const</span> user = &#123; <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;xiaoli&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;pd123123&quot;</span> &#125;;<br><span class="hljs-comment">//sql语句 ? 为占位符</span><br><span class="hljs-keyword">const</span> sql = <span class="hljs-string">&quot;update users set ? where id=?&quot;</span>;<br><span class="hljs-comment">//执行sql,[user,15]替换 ?,形成快捷语法</span><br>db.query(sql, [user, <span class="hljs-number">15</span>], <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);<br>    &#125;<br>    <span class="hljs-comment">//影响的行数为 1</span><br>    <span class="hljs-keyword">if</span> (results.affectedRows === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;修改一条数据成功&quot;</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h3 id="delete删除数据"><a href="#delete删除数据" class="headerlink" title="delete删除数据"></a><code>delete</code>删除数据</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* delete删除语句 */</span><br><span class="hljs-comment">//sql语句</span><br><span class="hljs-keyword">const</span> sql = <span class="hljs-string">&quot;delete from users where id=?&quot;</span>;<br><span class="hljs-comment">//执行sql</span><br>db.query(sql, <span class="hljs-number">16</span>, <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);<br>    &#125;<br>    <span class="hljs-comment">//影响的行数为 1</span><br>    <span class="hljs-keyword">if</span> (results.affectedRows === <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;成功删除一条数据&quot;</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h3 id="update标记删除"><a href="#update标记删除" class="headerlink" title="update标记删除"></a><code>update</code>标记删除</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">/* delete删除非常危险使用update标记删除的数据 */</span><br><span class="hljs-comment">//sql语句</span><br><span class="hljs-keyword">const</span> sql = <span class="hljs-string">&quot;update users set status=? where id&gt;?&quot;</span>;<br><span class="hljs-comment">//执行sql</span><br>db.query(sql, [<span class="hljs-number">1</span>, <span class="hljs-number">4</span>], <span class="hljs-function">(<span class="hljs-params">err, results</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (err) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;发生未知错误&quot;</span> + err.message);<br>    &#125;<br>    <span class="hljs-comment">//影响的行数为 1</span><br>    <span class="hljs-keyword">if</span> (results.affectedRows &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;成功标记删除了&quot;</span> + results.affectedRows + <span class="hljs-string">&quot;数据&quot;</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Node-js/">Node.js</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Node-js/">Node.js</a>
+                    
+                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/26/Session%20%E5%92%8C%20JSON%20Web%20Token/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Session和JSON Web Token</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/25/MySQL/">
+                        <span class="hidden-mobile">MySQL基础知识</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

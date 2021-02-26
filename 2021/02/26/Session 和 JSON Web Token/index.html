@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bing.jpg">
+  <link rel="icon" type="image/png" href="/img/bing.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="我的博客">
+  <meta name="author" content="春闺梦里人">
+  <meta name="keywords" content="javasript">
+  <title>Session和JSON Web Token - 春闺梦里人</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chungui-mengliren.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>春闺梦里人</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.webp') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Session和JSON Web Token">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-26 21:35" pubdate>
+        2021年2月26日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      16
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Session和JSON Web Token</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Session-和-JSON-Web-Token"><a href="#Session-和-JSON-Web-Token" class="headerlink" title="Session 和 JSON Web Token"></a>Session 和 JSON Web Token</h1><h2 id="Web开发模式"><a href="#Web开发模式" class="headerlink" title="Web开发模式"></a>Web开发模式</h2><h3 id="基于服务端渲染"><a href="#基于服务端渲染" class="headerlink" title="基于服务端渲染"></a>基于服务端渲染</h3><ul>
+<li>服务端直接把数据动态拼接到 <code>HTML</code> 字符串中, 再把完整的 <code>HTML</code> 页面数据发送给客户端, 浏览器就可以直接渲染页面, 不需要进行 Ajax 请求的操作</li>
+<li>优点<ul>
+<li>前端渲染更快, 用户体验更好 (不需要首次等待 <code>Ajax </code>发送请求的过程)</li>
+<li>有利于 <code>SEO </code>搜索引擎读取权重词汇 (服务端响应的是完整带标签的 <code>HTML</code> 内容, 百度等爬虫更容器读取信息)</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>需要额外的服务器资源, 以及完善的运维体系去管理</li>
+<li>不利于前后端分离, 由页面是在服务端进行输出的, 需要前端的代码和 <code>Node.js</code> 服务端部署在一起</li>
+</ul>
+</li>
+</ul>
+<h3 id="基于客户端渲染"><a href="#基于客户端渲染" class="headerlink" title="基于客户端渲染"></a>基于客户端渲染</h3><ul>
+<li>依赖于 <code>Ajax</code> 技术的广泛运用, 后端只负责提供 <code>API </code>接口, 前端使用 <code>Ajax</code> 调用接口渲染页面的开发模式</li>
+<li>优点<ul>
+<li>开发体验好, 各司其职, 效率更高</li>
+<li>用户体验好, <code>Ajax</code> 可以在不刷新页面的情况下实现局部更新</li>
+<li>减轻服务端的渲染压力, 页面最终是在用户的浏览器中生成的</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>前端渲染耗时, 首屏渲染的体验度不高</li>
+<li>不利于 <code>SEO </code>搜索引擎优化</li>
+</ul>
+</li>
+</ul>
+<h2 id="身份验证"><a href="#身份验证" class="headerlink" title="身份验证"></a>身份验证</h2><ul>
+<li><p>通过一系列手段完成用户身份验证, 网站的内容如果涉及到隐私性, 安全性和交易性, 需要身份认证的机制来确保安全</p>
+</li>
+<li><p>验证方式</p>
+<ul>
+<li>服务端渲染推荐 <code>Session</code></li>
+<li>客户端渲染推荐 <code>JSON Web Token</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><h3 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h3><ul>
+<li><p>概述</p>
+<p>Cookie是存储在用户浏览器大小不超过 4kb 的特殊字符串</p>
+</li>
+<li><p>组成</p>
+<p>一个名称(Name) 和 值(Value) 以及其他几个用于控制 Cookie 有效期, 安全性, 使用范围的可选属性组成</p>
+</li>
+<li><p>作用</p>
+<p>不用域名下的 <code>Cookie </code>信息是独立的, 每当客户端发送请求时, 会自动把当前域名下所有未过期的 <code>Cookie</code>添加到请求头, 一同发送到服务器</p>
+</li>
+<li><p>特点</p>
+<ul>
+<li>自动发送</li>
+<li>域名独立</li>
+<li>过期时限</li>
+<li>4KB 限制</li>
+</ul>
+</li>
+<li><p>机制</p>
+<p>浏览器第一次发送请求到服务器, 服务器会以响应头的形式向浏览器写入 <code>Cookie </code>保存, 之后浏览器每次发送请求到服务器都会自动将<code>Cookie</code>以请求头的形式发送过去</p>
+</li>
+<li><p>缺点</p>
+<ul>
+<li><code>Cookie</code> 是存储在浏览器端的, 并且浏览器本身提供了读写 Cookie 的方法, 因此 <code>Cookie</code> 信息很容易被窃取和伪造</li>
+<li><code>SessionID</code> 需要借助 <code>cookie</code> 手段存放在浏览器, 当涉及到前端跨域请求后端接口的时候, 需要做额外的配置,才能实现 <code>Session</code> 的认证</li>
+</ul>
+</li>
+</ul>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p> 使用 <code>Session</code> 方案, 用户的状态信息在服务器生成和存储, 浏览器只负责保留一个 <code>sessionID</code> 秘钥, 每次发送请求时携带这个 <code>sessionID</code> 到服务器, 服务器根据这个唯一的 <code>id</code>值查询对应的用户信息然后进行返回</p>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>使用<code>express-session</code>模块处理<code>cookie</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 导入 express 模块</span><br><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;express&#x27;</span>);<br><span class="hljs-comment">//导入 express-session模块处理cookie</span><br><span class="hljs-keyword">const</span> session = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;express-session&#x27;</span>);<br><span class="hljs-comment">// 创建 express 的服务器实例</span><br><span class="hljs-keyword">const</span> app = express();<br><span class="hljs-comment">// 配置 Session 中间件</span><br>app.use(session(&#123;<br>  secret: <span class="hljs-string">&#x27;keyboard cat&#x27;</span>,<br>  resave: <span class="hljs-literal">false</span>,<br>  saveUninitialized: <span class="hljs-literal">true</span><br>&#125;));<br><span class="hljs-comment">// 托管静态页面</span><br>app.use(express.static(<span class="hljs-string">&#x27;./pages&#x27;</span>));<br><span class="hljs-comment">// 解析 POST 提交过来的表单数据</span><br>app.use(express.urlencoded(&#123; <span class="hljs-attr">extended</span>: <span class="hljs-literal">false</span> &#125;));<br><span class="hljs-comment">// 登录的 API 接口</span><br>app.post(<span class="hljs-string">&#x27;/api/login&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> &#123;<br>  <span class="hljs-comment">// 判断用户提交的登录信息是否正确</span><br>  <span class="hljs-keyword">if</span> (req.body.username !== <span class="hljs-string">&#x27;admin&#x27;</span> || req.body.password !== <span class="hljs-string">&#x27;000000&#x27;</span>) &#123;<br>    <span class="hljs-keyword">return</span> res.send(&#123; <span class="hljs-attr">status</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">msg</span>: <span class="hljs-string">&#x27;登录失败&#x27;</span> &#125;);<br>  &#125;<br>  <span class="hljs-comment">// 登录成功后的用户信息，保存到 Session 中</span><br>  req.session.user = req.body;<br>  req.session.isLogin = <span class="hljs-literal">true</span>;<br>  res.send(&#123; <span class="hljs-attr">status</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">msg</span>: <span class="hljs-string">&#x27;登录成功&#x27;</span> &#125;)<br>&#125;);<br><span class="hljs-comment">// 获取用户姓名的接口</span><br>app.get(<span class="hljs-string">&#x27;/api/username&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> &#123;<br>  <span class="hljs-built_in">console</span>.log(req.session.isLogin)<br>  <span class="hljs-comment">// 从 Session 中获取用户的名称，响应给客户端</span><br>  <span class="hljs-keyword">if</span> (!req.session.isLogin) &#123;<br>    <span class="hljs-keyword">return</span> res.send(&#123;<br>      status: <span class="hljs-number">1</span>,<br>      message: <span class="hljs-string">&quot;没有登录&quot;</span><br>    &#125;);<br>  &#125;<br>  res.send(&#123;<br>    status: <span class="hljs-number">0</span>,<br>    message: <span class="hljs-string">&quot;获取用户名成功&quot;</span>,<br>    username: req.session.user.username<br>  &#125;);<br>&#125;);<br><span class="hljs-comment">// 退出登录的接口</span><br>app.post(<span class="hljs-string">&#x27;/api/logout&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> &#123;<br>  <span class="hljs-comment">// 清空 Session 信息</span><br>  req.session.destroy();<br>  res.send(&#123;<br>    status: <span class="hljs-number">0</span>,<br>    message: <span class="hljs-string">&quot;退出成功&quot;</span><br>  &#125;);<br>&#125;);<br><span class="hljs-comment">// 调用 app.listen 方法，指定端口号并启动web服务器</span><br>app.listen(<span class="hljs-number">80</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Express server running at http://127.0.0.1:80&#x27;</span>)<br>&#125;);<br></code></pre></td></tr></table></figure>
+<h2 id="JSON-Web-Token"><a href="#JSON-Web-Token" class="headerlink" title="JSON Web Token"></a>JSON Web Token</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>当前端跨域请求后端接口时, <code>Session</code> 认证存在局限性, <code>JWT</code> 认证方式,没有和 <code>Cookie</code> 存在绑定关系,基于<code>token</code>的鉴权机制, <code>JWT</code>是前端目前最流行的跨域认证解决方案</p>
+<h3 id="机制"><a href="#机制" class="headerlink" title="机制"></a>机制</h3><p>用户信息通过加密签名后 <code>token</code> 字符串的形式, 保存在客户端浏览器中,服务器通过解密客户端传来的 <code>token</code> 字符串来认证用户的身份</p>
+<h3 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h3><p>通常由三部分组成, 使用英文符号.进行分隔: Header.Payload.Signature</p>
+<ul>
+<li><p>Header: 头部</p>
+</li>
+<li><p>Payload: 有效荷载, 这里存放的是经过加密后的用户信息</p>
+</li>
+<li><p>Signature: 签名</p>
+</li>
+</ul>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>服务端签发 <code>TOKEN</code> 到客户端后, 存储到 <code>localStorage</code> 中, 每次发送请求前带上 <code>TOKEN</code>, 放在<code>HTTP </code>请求头的 <code>Authorization </code>字段中 </p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Node-js/">Node.js</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Node-js/">Node.js</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Session/">Session</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Cookie/">Cookie</a>
+                    
+                      <a class="hover-with-bg" href="/tags/JWT/">JWT</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/26/Node%E4%B8%AD%E6%93%8D%E4%BD%9CMySQL/">
+                        <span class="hidden-mobile">Node.js中操作MySQL</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
