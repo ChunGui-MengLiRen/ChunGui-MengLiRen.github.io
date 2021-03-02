@@ -179,12 +179,6 @@
       
       <p class="h5">2021</p>
     
-    <a href="/2021/01/28/%E8%AF%97%E5%8F%A5/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">腹有诗书气自华</span>
-      <time style="float: right;">01-28</time>
-    </a>
-  
-    
     <a href="/2021/01/28/Hexo%E4%BD%BF%E7%94%A8/" class="list-group-item list-group-item-action">
       <span class="archive-post-title">Hexo 使用</span>
       <time style="float: right;">01-28</time>
@@ -192,6 +186,18 @@
   
 </div>
 
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/archives/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
+    </span>
+  </nav>
+  
+  <script>
+    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
+      ele.href += '#board';
+    }
+  </script>
 
 
 
